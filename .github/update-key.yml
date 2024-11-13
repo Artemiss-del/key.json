@@ -1,0 +1,28 @@
+name: Daily Key Update
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs daily at midnight UTC
+
+jobs:
+  updateKey:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Update Key
+        run: |
+          # Generate a new daily key (e.g., based on the date)
+          NEW_KEY="KEY$(date +%Y%m%d)"
+
+          # Write the new key to key.json
+          echo "{ \"dailyKey\": \"$NEW_KEY\" }" > key.json
+
+      - name: Commit Changes
+        run: |
+          git config --local user.name "github-actions"
+          git config --local user.email "actions@github.com"
+          git add key.json
+          git commit -m "Update daily key"
+          git push
